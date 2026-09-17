@@ -69,62 +69,71 @@ public class BankApplicationCLI {
             int choice = readInt("Select an option [1-10]: ", 1, 10);
             System.out.println();
 
-            switch (choice) {
-                case 1 -> handleRegisterCustomer();
-                case 2 -> handleOpenSavingsAccount();
-                case 3 -> handleOpenCurrentAccount();
-                case 4 -> handleDeposit();
-                case 5 -> handleWithdraw();
-                case 6 -> handleTransfer();
-                case 7 -> handleViewStatement();
-                case 8 -> handleViewCustomerProfile();
-                case 9 -> handleRunConcurrencyHarness();
-                case 10 -> {
-                    System.out.println("==========================================================================");
-                    System.out.println(" Thank you for using the Core Banking Management System. Goodbye!");
-                    System.out.println("==========================================================================");
-                    running = false;
+            try {
+                switch (choice) {
+                    case 1 -> handleRegisterCustomer();
+                    case 2 -> handleOpenSavingsAccount();
+                    case 3 -> handleOpenCurrentAccount();
+                    case 4 -> handleDeposit();
+                    case 5 -> handleWithdraw();
+                    case 6 -> handleTransfer();
+                    case 7 -> handleViewStatement();
+                    case 8 -> handleViewCustomerProfile();
+                    case 9 -> handleRunConcurrencyHarness();
+                    case 10 -> {
+                        System.out.println("==========================================================================");
+                        System.out.println(" Thank you for using the Core Banking Management System. Goodbye!");
+                        System.out.println("==========================================================================");
+                        running = false;
+                    }
+                    default -> System.out.println("Invalid selection. Please try again.");
                 }
-                default -> System.out.println("Invalid selection. Please try again.");
+            } catch (OperationCancelledException e) {
+                System.out.println("\n[CANCELLED] Operation aborted by user. Returning to main menu...");
             }
             if (running) {
                 System.out.println("\nPress ENTER to return to the main menu...");
-                scanner.nextLine();
+                if (scanner.hasNextLine()) {
+                    scanner.nextLine();
+                } else {
+                    running = false;
+                }
             }
         }
     }
 
     private void printHeader() {
-        System.out.println("╔════════════════════════════════════════════════════════════════════════╗");
-        System.out.println("║            RETAIL BANKING CORE MANAGEMENT SYSTEM (JAVA 21)             ║");
-        System.out.println("║          Thread-Safe • Deadlock-Free • Production Domain Core          ║");
-        System.out.println("╚════════════════════════════════════════════════════════════════════════╝");
+        System.out.println("+------------------------------------------------------------------------+");
+        System.out.println("|            RETAIL BANKING CORE MANAGEMENT SYSTEM (JAVA 21)             |");
+        System.out.println("|          Thread-Safe | Deadlock-Free | Production Domain Core          |");
+        System.out.println("+------------------------------------------------------------------------+");
     }
 
     private void printMainMenu() {
-        System.out.println("\n╔══════════════════════════════ MAIN MENU ══════════════════════════════╗");
-        System.out.println("║  1. Register New Customer                                              ║");
-        System.out.println("║  2. Open Savings Account (₹1,000 Min Balance + Interest Accrual)      ║");
-        System.out.println("║  3. Open Current Account (Overdraft Facility + Auto Fee Deduction)     ║");
-        System.out.println("║  4. Deposit Funds (Standard / Custom Memo)                             ║");
-        System.out.println("║  5. Withdraw Funds (ATM / Counter Debit)                               ║");
-        System.out.println("║  6. Inter-Account Transfer (Deadlock-Free Atomic Transfer)             ║");
-        System.out.println("║  7. View Account Statement / Passbook Ledger                           ║");
-        System.out.println("║  8. View Customer Profile & Associated Accounts                        ║");
-        System.out.println("║  9. Run Multithreading & Concurrency Stress Test                       ║");
-        System.out.println("║ 10. Exit System                                                        ║");
-        System.out.println("╚════════════════════════════════════════════════════════════════════════╝");
+        System.out.println("\n+----------------------------- MAIN MENU --------------------------------+");
+        System.out.println("|  1. Register New Customer                                              |");
+        System.out.println("|  2. Open Savings Account ($1,000 Min Balance + Interest Accrual)       |");
+        System.out.println("|  3. Open Current Account (Overdraft Facility + Auto Fee Deduction)     |");
+        System.out.println("|  4. Deposit Funds (Standard / Custom Memo)                             |");
+        System.out.println("|  5. Withdraw Funds (ATM / Counter Debit)                               |");
+        System.out.println("|  6. Inter-Account Transfer (Deadlock-Free Atomic Transfer)             |");
+        System.out.println("|  7. View Account Statement / Passbook Ledger                           |");
+        System.out.println("|  8. View Customer Profile & Associated Accounts                        |");
+        System.out.println("|  9. Run Multithreading & Concurrency Stress Test                       |");
+        System.out.println("| 10. Exit System                                                        |");
+        System.out.println("+------------------------------------------------------------------------+");
     }
 
     private void handleRegisterCustomer() {
         System.out.println("--- [1] REGISTER NEW CUSTOMER ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         String name = readNonEmptyString("Enter Full Name: ");
         String email = readNonEmptyString("Enter Email Address: ");
         String phone = readNonEmptyString("Enter Phone Number: ");
 
         try {
             Customer customer = bankService.registerCustomer(name, email, phone);
-            System.out.println("\n✔ SUCCESS: Customer registered successfully!");
+            System.out.println("\n[SUCCESS] Customer registered successfully!");
             System.out.printf("  Customer ID : %s\n", customer.getCustomerId());
             System.out.printf("  Full Name   : %s\n", customer.getFullName());
             System.out.printf("  Email       : %s\n", customer.getEmail());
@@ -136,19 +145,20 @@ public class BankApplicationCLI {
 
     private void handleOpenSavingsAccount() {
         System.out.println("--- [2] OPEN SAVINGS ACCOUNT ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllCustomersShort();
         String custId = readNonEmptyString("Enter Customer ID: ");
-        double initialDeposit = readDouble("Enter Initial Deposit (Min ₹1,000 recommended, >= 0 allowed): ", 0.0);
+        double initialDeposit = readDouble("Enter Initial Deposit (Min $1,000 recommended, >= 0 allowed): ", 0.0);
         double interestRate = readDouble("Enter Annual Interest Rate (e.g. 0.04 for 4.0%): ", 0.0);
 
         try {
             BankAccount account = bankService.openSavingsAccount(custId, initialDeposit, interestRate);
-            System.out.println("\n✔ SUCCESS: Savings Account opened successfully!");
+            System.out.println("\n[SUCCESS] Savings Account opened successfully!");
             System.out.printf("  Account Number : %s\n", account.getAccountNumber());
             System.out.printf("  Primary Holder : %s (%s)\n", account.getOwner().getFullName(), custId);
-            System.out.printf("  Initial Balance: ₹%,.2f\n", account.getBalance());
+            System.out.printf("  Initial Balance: $%,.2f\n", account.getBalance());
             System.out.printf("  Interest Rate  : %.2f%%\n", ((SavingsAccount) account).getInterestRate() * 100.0);
-            System.out.printf("  Minimum Balance: ₹%,.2f\n", SavingsAccount.MINIMUM_BALANCE);
+            System.out.printf("  Minimum Balance: $%,.2f\n", SavingsAccount.MINIMUM_BALANCE);
         } catch (BankingException e) {
             printError("Account Opening Failed", e.getMessage());
         }
@@ -156,6 +166,7 @@ public class BankApplicationCLI {
 
     private void handleOpenCurrentAccount() {
         System.out.println("--- [3] OPEN CURRENT ACCOUNT ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllCustomersShort();
         String custId = readNonEmptyString("Enter Customer ID: ");
         double initialDeposit = readDouble("Enter Initial Deposit (>= 0): ", 0.0);
@@ -163,12 +174,12 @@ public class BankApplicationCLI {
 
         try {
             BankAccount account = bankService.openCurrentAccount(custId, initialDeposit, overdraftLimit);
-            System.out.println("\n✔ SUCCESS: Current Account opened successfully!");
+            System.out.println("\n[SUCCESS] Current Account opened successfully!");
             System.out.printf("  Account Number : %s\n", account.getAccountNumber());
             System.out.printf("  Primary Holder : %s (%s)\n", account.getOwner().getFullName(), custId);
-            System.out.printf("  Initial Balance: ₹%,.2f\n", account.getBalance());
-            System.out.printf("  Overdraft Limit: ₹%,.2f\n", ((CurrentAccount) account).getOverdraftLimit());
-            System.out.printf("  Overdraft Fee  : ₹%,.2f per overdraft debit\n", CurrentAccount.OVERDRAFT_FEE);
+            System.out.printf("  Initial Balance: $%,.2f\n", account.getBalance());
+            System.out.printf("  Overdraft Limit: $%,.2f\n", ((CurrentAccount) account).getOverdraftLimit());
+            System.out.printf("  Overdraft Fee  : $%,.2f per overdraft debit\n", CurrentAccount.OVERDRAFT_FEE);
         } catch (BankingException e) {
             printError("Account Opening Failed", e.getMessage());
         }
@@ -176,11 +187,15 @@ public class BankApplicationCLI {
 
     private void handleDeposit() {
         System.out.println("--- [4] DEPOSIT FUNDS ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllAccountsShort();
         String accNum = readNonEmptyString("Enter Target Account Number: ");
-        double amount = readDouble("Enter Deposit Amount (₹): ", 0.01);
-        System.out.print("Enter Custom Narration / Note (or press ENTER for default): ");
-        String note = scanner.nextLine().trim();
+        double amount = readDouble("Enter Deposit Amount ($): ", 0.01);
+        System.out.print("Enter Custom Narration / Note (or press ENTER for default, 'cancel' to abort): ");
+        String note = scanner.hasNextLine() ? scanner.nextLine().trim() : "";
+        if (isCancellationCommand(note)) {
+            throw new OperationCancelledException();
+        }
 
         try {
             if (note.isEmpty()) {
@@ -189,10 +204,10 @@ public class BankApplicationCLI {
                 bankService.deposit(accNum, amount, note);
             }
             BankAccount account = bankService.findAccount(accNum);
-            System.out.println("\n✔ SUCCESS: Deposit credited successfully!");
+            System.out.println("\n[SUCCESS] Deposit credited successfully!");
             System.out.printf("  Account Number: %s\n", account.getAccountNumber());
-            System.out.printf("  Amount Credited: ₹%,.2f\n", amount);
-            System.out.printf("  Updated Balance: ₹%,.2f\n", account.getBalance());
+            System.out.printf("  Amount Credited: $%,.2f\n", amount);
+            System.out.printf("  Updated Balance: $%,.2f\n", account.getBalance());
         } catch (BankingException e) {
             printError("Deposit Failed", e.getMessage());
         }
@@ -200,24 +215,25 @@ public class BankApplicationCLI {
 
     private void handleWithdraw() {
         System.out.println("--- [5] WITHDRAW FUNDS ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllAccountsShort();
         String accNum = readNonEmptyString("Enter Account Number: ");
-        double amount = readDouble("Enter Withdrawal Amount (₹): ", 0.01);
+        double amount = readDouble("Enter Withdrawal Amount ($): ", 0.01);
 
         try {
             bankService.withdraw(accNum, amount);
             BankAccount account = bankService.findAccount(accNum);
-            System.out.println("\n✔ SUCCESS: Withdrawal completed successfully!");
+            System.out.println("\n[SUCCESS] Withdrawal completed successfully!");
             System.out.printf("  Account Number: %s\n", account.getAccountNumber());
-            System.out.printf("  Amount Debited: ₹%,.2f\n", amount);
-            System.out.printf("  Updated Balance: ₹%,.2f\n", account.getBalance());
+            System.out.printf("  Amount Debited: $%,.2f\n", amount);
+            System.out.printf("  Updated Balance: $%,.2f\n", account.getBalance());
         } catch (InsufficientFundsException e) {
             printError("Insufficient Funds Error", String.format(
-                    "Cannot complete withdrawal. Current Balance: ₹%,.2f, Requested: ₹%,.2f, Minimum Balance Rule: ₹%,.2f",
+                    "Cannot complete withdrawal. Current Balance: $%,.2f, Requested: $%,.2f, Minimum Balance Rule: $%,.2f",
                     e.getCurrentBalance(), e.getRequestedAmount(), e.getMinimumBalance()));
         } catch (OverdraftLimitExceededException e) {
             printError("Overdraft Limit Exceeded", String.format(
-                    "Cannot complete withdrawal. Current Balance: ₹%,.2f, Overdraft Limit: ₹%,.2f (Max Available: ₹%,.2f), Requested: ₹%,.2f",
+                    "Cannot complete withdrawal. Current Balance: $%,.2f, Overdraft Limit: $%,.2f (Max Available: $%,.2f), Requested: $%,.2f",
                     e.getCurrentBalance(), e.getOverdraftLimit(), e.getCurrentBalance() + e.getOverdraftLimit(), e.getRequestedAmount()));
         } catch (BankingException e) {
             printError("Withdrawal Failed", e.getMessage());
@@ -226,29 +242,33 @@ public class BankApplicationCLI {
 
     private void handleTransfer() {
         System.out.println("--- [6] INTER-ACCOUNT TRANSFER (DEADLOCK-FREE) ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllAccountsShort();
         String fromAccNum = readNonEmptyString("Enter Source (From) Account Number: ");
         String toAccNum = readNonEmptyString("Enter Destination (To) Account Number: ");
-        double amount = readDouble("Enter Transfer Amount (₹): ", 0.01);
-        System.out.print("Enter Transfer Memo / Description: ");
-        String desc = scanner.nextLine().trim();
+        double amount = readDouble("Enter Transfer Amount ($): ", 0.01);
+        System.out.print("Enter Transfer Memo / Description (or 'cancel' to abort): ");
+        String desc = scanner.hasNextLine() ? scanner.nextLine().trim() : "";
+        if (isCancellationCommand(desc)) {
+            throw new OperationCancelledException();
+        }
 
         try {
             bankService.transfer(fromAccNum, toAccNum, amount, desc);
             BankAccount fromAcc = bankService.findAccount(fromAccNum);
             BankAccount toAcc = bankService.findAccount(toAccNum);
 
-            System.out.println("\n✔ SUCCESS: Inter-account transfer completed atomically!");
-            System.out.printf("  Transferred Amount : ₹%,.2f\n", amount);
-            System.out.printf("  From Account (%s) : New Balance: ₹%,.2f\n", fromAcc.getAccountNumber(), fromAcc.getBalance());
-            System.out.printf("  To Account (%s)   : New Balance: ₹%,.2f\n", toAcc.getAccountNumber(), toAcc.getBalance());
+            System.out.println("\n[SUCCESS] Inter-account transfer completed atomically!");
+            System.out.printf("  Transferred Amount : $%,.2f\n", amount);
+            System.out.printf("  From Account (%s) : New Balance: $%,.2f\n", fromAcc.getAccountNumber(), fromAcc.getBalance());
+            System.out.printf("  To Account (%s)   : New Balance: $%,.2f\n", toAcc.getAccountNumber(), toAcc.getBalance());
         } catch (InsufficientFundsException e) {
             printError("Transfer Aborted - Insufficient Funds", String.format(
-                    "Sender %s does not have enough funds. Balance: ₹%,.2f, Requested: ₹%,.2f, Min Balance: ₹%,.2f",
+                    "Sender %s does not have enough funds. Balance: $%,.2f, Requested: $%,.2f, Min Balance: $%,.2f",
                     fromAccNum, e.getCurrentBalance(), e.getRequestedAmount(), e.getMinimumBalance()));
         } catch (OverdraftLimitExceededException e) {
             printError("Transfer Aborted - Overdraft Exceeded", String.format(
-                    "Sender %s exceeded credit line. Balance: ₹%,.2f, Overdraft Limit: ₹%,.2f, Requested: ₹%,.2f",
+                    "Sender %s exceeded credit line. Balance: $%,.2f, Overdraft Limit: $%,.2f, Requested: $%,.2f",
                     fromAccNum, e.getCurrentBalance(), e.getOverdraftLimit(), e.getRequestedAmount()));
         } catch (BankingException e) {
             printError("Transfer Failed", e.getMessage());
@@ -257,6 +277,7 @@ public class BankApplicationCLI {
 
     private void handleViewStatement() {
         System.out.println("--- [7] VIEW ACCOUNT STATEMENT / PASSBOOK ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllAccountsShort();
         String accNum = readNonEmptyString("Enter Account Number: ");
 
@@ -270,6 +291,7 @@ public class BankApplicationCLI {
 
     private void handleViewCustomerProfile() {
         System.out.println("--- [8] VIEW CUSTOMER PROFILE & ACCOUNTS ---");
+        System.out.println("(Type 'cancel' or 'back' at any prompt to return to main menu)");
         displayAllCustomersShort();
         String custId = readNonEmptyString("Enter Customer ID: ");
 
@@ -291,7 +313,7 @@ public class BankApplicationCLI {
                 System.out.println("  ------------------------------------------------------------------------");
                 double totalBalance = 0.0;
                 for (BankAccount acc : accounts) {
-                    System.out.printf("  %-12s | %-16s | ₹%,13.2f | %d items\n",
+                    System.out.printf("  %-12s | %-16s | $%,13.2f | %d items\n",
                             acc.getAccountNumber(),
                             acc.getAccountType(),
                             acc.getBalance(),
@@ -299,7 +321,7 @@ public class BankApplicationCLI {
                     totalBalance += acc.getBalance();
                 }
                 System.out.println("  ------------------------------------------------------------------------");
-                System.out.printf("  TOTAL RELATIONSHIP VALUE ACROSS ALL ACCOUNTS: ₹%,.2f\n", totalBalance);
+                System.out.printf("  TOTAL RELATIONSHIP VALUE ACROSS ALL ACCOUNTS: $%,.2f\n", totalBalance);
             }
             System.out.println("==========================================================================");
         } catch (BankingException e) {
@@ -325,30 +347,48 @@ public class BankApplicationCLI {
         List<BankAccount> accounts = bankService.getAllAccounts();
         if (accounts.isEmpty()) return;
         System.out.println(" [Active Accounts: " +
-                accounts.stream().map(a -> a.getAccountNumber() + " [₹" + String.format("%.2f", a.getBalance()) + "]").toList() + "]");
+                accounts.stream().map(a -> a.getAccountNumber() + " [$" + String.format("%.2f", a.getBalance()) + "]").toList() + "]");
     }
 
     private void printError(String title, String message) {
-        System.out.println("\n✘ ERROR: " + title);
+        System.out.println("\n[ERROR] " + title);
         System.out.println("  Details: " + message);
     }
 
-    // Defensive input readers
+    // Defensive input readers with in-flight cancellation support
+    private boolean isCancellationCommand(String input) {
+        if (input == null) return false;
+        String clean = input.trim().toLowerCase();
+        return clean.equals("cancel") || clean.equals("back") || clean.equals("exit") || clean.equals(":q") || clean.equals("quit");
+    }
+
     private String readNonEmptyString(String prompt) {
         while (true) {
             System.out.print(prompt);
+            if (!scanner.hasNextLine()) {
+                throw new OperationCancelledException();
+            }
             String input = scanner.nextLine().trim();
+            if (isCancellationCommand(input)) {
+                throw new OperationCancelledException();
+            }
             if (!input.isEmpty()) {
                 return input;
             }
-            System.out.println("Input cannot be empty. Please enter a valid value.");
+            System.out.println("Input cannot be empty. Please enter a valid value (or 'cancel' to abort).");
         }
     }
 
     private int readInt(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
+            if (!scanner.hasNextLine()) {
+                return max;
+            }
             String input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit") || input.equalsIgnoreCase(":q")) {
+                return 10;
+            }
             try {
                 int value = Integer.parseInt(input);
                 if (value >= min && value <= max) {
@@ -364,16 +404,31 @@ public class BankApplicationCLI {
     private double readDouble(String prompt, double min) {
         while (true) {
             System.out.print(prompt);
+            if (!scanner.hasNextLine()) {
+                throw new OperationCancelledException();
+            }
             String input = scanner.nextLine().trim();
+            if (isCancellationCommand(input)) {
+                throw new OperationCancelledException();
+            }
             try {
                 double value = Double.parseDouble(input);
                 if (value >= min) {
                     return value;
                 }
-                System.out.printf("Please enter a value greater than or equal to %.2f.\n", min);
+                System.out.printf("Please enter a value greater than or equal to $%.2f (or 'cancel' to abort).\n", min);
             } catch (NumberFormatException e) {
-                System.out.println("Invalid decimal input. Please enter a valid number (e.g., 1000.50).");
+                System.out.println("Invalid decimal input. Please enter a valid number (e.g., 1000.50) or 'cancel' to abort.");
             }
+        }
+    }
+
+    /**
+     * Internal unchecked exception thrown when a user requests cancellation of an operation.
+     */
+    private static class OperationCancelledException extends RuntimeException {
+        public OperationCancelledException() {
+            super("Operation cancelled by user.");
         }
     }
 }

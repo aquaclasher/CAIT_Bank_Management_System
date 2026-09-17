@@ -16,9 +16,11 @@ public class CLIIntegrationTest {
 
         // Sequence of simulated inputs:
         // 1: Register customer -> "Dev Sharma" -> "dev@example.com" -> "9876500000" -> ENTER
+        // Cancellation Test A: Select 2 -> type "cancel" -> ENTER (menu returns)
         // 2: Open Savings -> "CUST-1004" -> "5000" -> "0.04" -> ENTER
         // 3: Open Current -> "CUST-1004" -> "10000" -> "20000" -> ENTER
         // 4: Deposit -> "SAV-100003" -> "2500" -> "Freelance Income" -> ENTER
+        // Cancellation Test B: Select 5 -> "SAV-100003" -> type "back" on amount -> ENTER (menu returns)
         // 5: Withdraw -> "SAV-100003" -> "1000" -> ENTER
         // 6: Transfer -> "SAV-100003" -> "CUR-500002" -> "500" -> "Family support" -> ENTER
         // 7: View Statement -> "SAV-100003" -> ENTER
@@ -26,14 +28,16 @@ public class CLIIntegrationTest {
         // 10: Exit
         String simulatedInput = String.join("\n",
                 "1", "Dev Sharma", "dev@example.com", "9876500000", "",
+                "2", "cancel", "",
                 "2", "CUST-1004", "5000", "0.04", "",
                 "3", "CUST-1004", "10000", "20000", "",
                 "4", "SAV-100003", "2500", "Freelance Income", "",
+                "5", "SAV-100003", "back", "",
                 "5", "SAV-100003", "1000", "",
                 "6", "SAV-100003", "CUR-500002", "500", "Family support", "",
                 "7", "SAV-100003", "",
                 "8", "CUST-1004", "",
-                "10"
+                "exit"
         ) + "\n";
 
         InputStream originalIn = System.in;

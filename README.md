@@ -15,7 +15,7 @@ src/
         ├── model/
         │   ├── Customer.java                      # Customer aggregate root with immutable identity
         │   ├── BankAccount.java                   # Abstract base account implementing Transactable & Reportable
-        │   ├── SavingsAccount.java                # Enforces ₹1,000 minimum balance invariant & interest calculation
+        │   ├── SavingsAccount.java                # Enforces $1,000 minimum balance invariant & interest calculation
         │   ├── CurrentAccount.java                # Enforces overdraft facility and auto-penalty fee assessment
         │   ├── Transaction.java                   # Immutable record representing passbook line items
         │   └── TransactionType.java               # Enum for DEPOSIT, WITHDRAWAL, TRANSFER_OUT, TRANSFER_IN, INTEREST, FEE
@@ -99,13 +99,13 @@ java -cp bin com.bank.test.BankingSystemTest
 
 ### C. Polymorphism & Inheritance Invariants
 - **`SavingsAccount`**:
-  - Invariant: Account balance cannot drop below `MINIMUM_BALANCE` (₹1,000.00).
+  - Invariant: Account balance cannot drop below `MINIMUM_BALANCE` ($1,000.00).
   - Throws `InsufficientFundsException` containing the current balance, requested withdrawal, and minimum balance rule.
   - Implements `applyInterest()` to credit periodic accrued interest.
 - **`CurrentAccount`**:
   - Invariant: Account can be drawn down to `-(overdraftLimit)`.
   - Throws `OverdraftLimitExceededException` if requested withdrawal exceeds available balance + overdraft limit.
-  - Automatically assesses and records an `OVERDRAFT_FEE` (₹50.00) whenever overdraft credit is tapped.
+  - Automatically assesses and records an `OVERDRAFT_FEE` ($50.00) whenever overdraft credit is tapped.
 
 ### D. Java Object Method Overrides (`equals`, `hashCode`, `toString`)
 - **`Customer`**:
@@ -124,8 +124,8 @@ Instead of synchronizing the entire banking service (which would create a massiv
 
 ### B. The Deadlock Problem in Bidirectional Transfers
 Consider two concurrent transfer operations:
-- **Thread 1**: Transfers ₹500 from Account `ACC-A` to Account `ACC-B`.
-- **Thread 2**: Transfers ₹500 from Account `ACC-B` to Account `ACC-A`.
+- **Thread 1**: Transfers $500 from Account `ACC-A` to Account `ACC-B`.
+- **Thread 2**: Transfers $500 from Account `ACC-B` to Account `ACC-A`.
 
 If Thread 1 locks `ACC-A` and waits for `ACC-B`, while Thread 2 locks `ACC-B` and waits for `ACC-A`, a circular wait condition (**Deadlock**) occurs.
 
@@ -163,23 +163,23 @@ Because all threads in the JVM acquire `ACC-A` before `ACC-B`, circular wait is 
 The `ConcurrencyHarness` provides reproducible verification of the system under heavy concurrent load:
 
 ### Scenario 1: Multi-Channel Race Condition on a Shared Account
-- **Setup**: One `SavingsAccount` with ₹10,000.00 balance (₹1,000.00 minimum balance invariant).
-- **Stress**: 10 simultaneous threads (ATM, POS, Web, Mobile) each attempting to withdraw ₹1,200.00 (Total ₹12,000.00 requested).
+- **Setup**: One `SavingsAccount` with $10,000.00 balance ($1,000.00 minimum balance invariant).
+- **Stress**: 10 simultaneous threads (ATM, POS, Web, Mobile) each attempting to withdraw $1,200.00 (Total $12,000.00 requested).
 - **Result**:
-  - Exactly **7 successful debits** (7 × ₹1,200 = ₹8,400.00 deducted).
+  - Exactly **7 successful debits** (7 × $1,200 = $8,400.00 deducted).
   - Exactly **3 rejected debits** with `InsufficientFundsException`.
-  - Final ledger balance is preserved at **₹1,600.00** (above the ₹1,000.00 minimum).
+  - Final ledger balance is preserved at **$1,600.00** (above the $1,000.00 minimum).
   - Passbook contains exactly 8 audited line items (1 opening deposit + 7 withdrawals).
 
 ### Scenario 2: High-Frequency Bidirectional Transfers (Deadlock-Free)
-- **Setup**: Account 1 (₹20,000.00) and Account 2 (₹20,000.00). Total pooled wealth = ₹40,000.00.
+- **Setup**: Account 1 ($20,000.00) and Account 2 ($20,000.00). Total pooled wealth = $40,000.00.
 - **Stress**:
-  - Thread A performs 500 transfers of ₹100 from Account 1 $\rightarrow$ Account 2.
-  - Thread B performs 500 transfers of ₹100 from Account 2 $\rightarrow$ Account 1.
+  - Thread A performs 500 transfers of $100 from Account 1 $\rightarrow$ Account 2.
+  - Thread B performs 500 transfers of $100 from Account 2 $\rightarrow$ Account 1.
 - **Result**:
   - All **1,000 transfers execute in parallel without deadlock**.
-  - Final balances remain exactly **₹20,000.00** each.
-  - Conservation of money holds: Total pooled money = **₹40,000.00**.
+  - Final balances remain exactly **$20,000.00** each.
+  - Conservation of money holds: Total pooled money = **$40,000.00**.
 
 ---
 
@@ -187,7 +187,7 @@ The `ConcurrencyHarness` provides reproducible verification of the system under 
 
 The interactive CLI (`BankApplicationCLI`) provides an intuitive, menu-driven interface with defensive parsing:
 1. **Register New Customer**: Validates name, email, and phone before generating a unique customer ID.
-2. **Open Savings Account**: Configures interest rate and enforces the ₹1,000 minimum balance rule.
+2. **Open Savings Account**: Configures interest rate and enforces the $1,000 minimum balance rule.
 3. **Open Current Account**: Configures approved overdraft limits and registers automatic penalty fee logic.
 4. **Deposit Funds**: Supports standard cash deposits and deposits with custom audit memos.
 5. **Withdraw Funds**: Executes polymorphic debit rules with custom error messages on minimum balance or overdraft breaches.

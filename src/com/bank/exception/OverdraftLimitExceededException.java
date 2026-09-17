@@ -10,7 +10,7 @@ public class OverdraftLimitExceededException extends BankingException {
 
     public OverdraftLimitExceededException(double currentBalance, double requestedAmount, double overdraftLimit) {
         super(String.format(
-                "Overdraft limit exceeded: Current balance is ₹%.2f, overdraft limit is ₹%.2f (Total credit line: ₹%.2f), but requested withdrawal is ₹%.2f.",
+                "Overdraft limit exceeded: Current balance is $%.2f, overdraft limit is $%.2f (Total credit line: $%.2f), but requested withdrawal is $%.2f.",
                 currentBalance, overdraftLimit, currentBalance + overdraftLimit, requestedAmount
         ));
         this.currentBalance = currentBalance;

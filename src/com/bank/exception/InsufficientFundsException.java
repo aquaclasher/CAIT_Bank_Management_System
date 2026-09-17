@@ -10,7 +10,7 @@ public class InsufficientFundsException extends BankingException {
 
     public InsufficientFundsException(double currentBalance, double requestedAmount, double minimumBalance) {
         super(String.format(
-                "Insufficient funds: Current balance is ₹%.2f, requested withdrawal is ₹%.2f, but minimum required balance is ₹%.2f (Maximum withdrawable: ₹%.2f).",
+                "Insufficient funds: Current balance is $%.2f, requested withdrawal is $%.2f, but minimum required balance is $%.2f (Maximum withdrawable: $%.2f).",
                 currentBalance, requestedAmount, minimumBalance, Math.max(0.0, currentBalance - minimumBalance)
         ));
         this.currentBalance = currentBalance;

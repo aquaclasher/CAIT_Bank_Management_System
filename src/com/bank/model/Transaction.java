@@ -50,13 +50,13 @@ public record Transaction(
     /**
      * Returns a formatted passbook row.
      * Example:
-     * [TX-e837194f] 2026-09-16 21:00:00 | DEPOSIT        | Amount: ₹  5,000.00 | Balance: ₹ 15,000.00 | Note: Salary Credit
+     * [TX-e837194f] 2026-09-16 21:00:00 | DEPOSIT        | Amount: $  5,000.00 | Balance: $ 15,000.00 | Note: Salary Credit
      */
     @Override
     public String toString() {
         String shortId = transactionId.length() > 8 ? transactionId.substring(0, 8) : transactionId;
-        String formattedAmount = String.format("₹%,10.2f", amount);
-        String formattedBalance = String.format("₹%,10.2f", balanceAfter);
+        String formattedAmount = String.format("$%,10.2f", amount);
+        String formattedBalance = String.format("$%,10.2f", balanceAfter);
         return String.format("[TX-%-8s] %s | %-13s | Amount: %s | Balance: %s | Note: %s",
                 shortId,
                 timestamp.format(FORMATTER),

@@ -42,23 +42,23 @@ public class ConcurrencyHarness {
      * Scenario 1: Race Condition on Shared Account (ATM vs. Online POS vs. Mobile App).
      *
      * Invariant Validation:
-     * - Opening Balance: ₹10,000.00
-     * - Minimum Balance Rule: ₹1,000.00
-     * - Maximum withdrawable funds: ₹9,000.00
-     * - 10 concurrent threads each attempting to withdraw ₹1,200.00 (Total requested: ₹12,000.00)
-     * - Expected outcome: Exactly 7 successful withdrawals (7 * ₹1,200 = ₹8,400.00 deducted).
+     * - Opening Balance: $10,000.00
+     * - Minimum Balance Rule: $1,000.00
+     * - Maximum withdrawable funds: $9,000.00
+     * - 10 concurrent threads each attempting to withdraw $1,200.00 (Total requested: $12,000.00)
+     * - Expected outcome: Exactly 7 successful withdrawals (7 * $1,200 = $8,400.00 deducted).
      * - Exactly 3 rejected withdrawals throwing InsufficientFundsException.
-     * - Final Balance: ₹1,600.00 (>= ₹1,000.00 minimum balance invariant).
+     * - Final Balance: $1,600.00 (>= $1,000.00 minimum balance invariant).
      */
     public static boolean runScenario1RaceCondition() {
         System.out.println(">>> SCENARIO 1: Race Condition on Shared Account (ATM vs. Online POS)");
         System.out.println("--------------------------------------------------------------------------");
         System.out.println("Initial Setup:");
         System.out.println(" - Account Type   : Savings Account");
-        System.out.println(" - Initial Balance: ₹10,000.00");
-        System.out.println(" - Minimum Balance: ₹1,000.00 (Non-breachable invariant)");
+        System.out.println(" - Initial Balance: $10,000.00");
+        System.out.println(" - Minimum Balance: $1,000.00 (Non-breachable invariant)");
         System.out.println(" - Workers        : 10 concurrent threads");
-        System.out.println(" - Request/Worker : ₹1,200.00 (Total attempted: ₹12,000.00)");
+        System.out.println(" - Request/Worker : $1,200.00 (Total attempted: $12,000.00)");
         System.out.println("--------------------------------------------------------------------------");
 
         BankService bankService = new BankServiceImpl();
@@ -85,7 +85,7 @@ public class ConcurrencyHarness {
                         startGate.await(); // Synchronize all 10 threads to hit the account simultaneously
                         savingsAcc.withdraw(withdrawAmount);
                         successCount.incrementAndGet();
-                        auditLogs.add(String.format(" [SUCCESS] Thread-%02d withdrew ₹%.2f. New Balance: ₹%.2f",
+                        auditLogs.add(String.format(" [SUCCESS] Thread-%02d withdrew $%.2f. New Balance: $%.2f",
                                 workerId, withdrawAmount, savingsAcc.getBalance()));
                     } catch (InsufficientFundsException ife) {
                         failureCount.incrementAndGet();
@@ -115,7 +115,7 @@ public class ConcurrencyHarness {
             System.out.printf(" - Time Taken          : %d ms\n", elapsed);
             System.out.printf(" - Successful Debits   : %d (Expected: 7)\n", successCount.get());
             System.out.printf(" - Rejected Debits     : %d (Expected: 3)\n", failureCount.get());
-            System.out.printf(" - Final Ledger Balance: ₹%.2f (Expected: ₹1,600.00)\n", savingsAcc.getBalance());
+            System.out.printf(" - Final Ledger Balance: $%.2f (Expected: $1,600.00)\n", savingsAcc.getBalance());
             System.out.printf(" - Total Passbook Items: %d (1 Initial + 7 Withdrawals = 8)\n", savingsAcc.getTransactionHistory().size());
 
             boolean balanceValid = Math.abs(savingsAcc.getBalance() - 1600.00) < 0.001;
@@ -142,24 +142,24 @@ public class ConcurrencyHarness {
      * Scenario 2: High-Frequency Bidirectional Transfers (Deadlock-Free).
      *
      * Invariant Validation:
-     * - ACC-1 Starting Balance: ₹20,000.00
-     * - ACC-2 Starting Balance: ₹20,000.00
-     * - Total Pooled Wealth: ₹40,000.00
-     * - Thread A: 500 transfers of ₹100 from ACC-1 to ACC-2
-     * - Thread B: 500 transfers of ₹100 from ACC-2 to ACC-1
+     * - ACC-1 Starting Balance: $20,000.00
+     * - ACC-2 Starting Balance: $20,000.00
+     * - Total Pooled Wealth: $40,000.00
+     * - Thread A: 500 transfers of $100 from ACC-1 to ACC-2
+     * - Thread B: 500 transfers of $100 from ACC-2 to ACC-1
      * - Total transfers: 1,000 transfers running concurrently.
-     * - Expected outcome: Zero deadlock, all 1,000 transfers succeed, pooled wealth remains ₹40,000.00,
-     *   final balances: ACC-1 = ₹20,000.00, ACC-2 = ₹20,000.00.
+     * - Expected outcome: Zero deadlock, all 1,000 transfers succeed, pooled wealth remains $40,000.00,
+     *   final balances: ACC-1 = $20,000.00, ACC-2 = $20,000.00.
      */
     public static boolean runScenario2BidirectionalTransfers() {
         System.out.println(">>> SCENARIO 2: High-Frequency Bidirectional Transfers (Deadlock Prevention)");
         System.out.println("--------------------------------------------------------------------------");
         System.out.println("Initial Setup:");
-        System.out.println(" - Account 1 (ACC-1) Initial Balance: ₹20,000.00");
-        System.out.println(" - Account 2 (ACC-2) Initial Balance: ₹20,000.00");
-        System.out.println(" - Total System Pooled Money        : ₹40,000.00");
-        System.out.println(" - Thread A: 500 transfers of ₹100 (ACC-1 -> ACC-2)");
-        System.out.println(" - Thread B: 500 transfers of ₹100 (ACC-2 -> ACC-1)");
+        System.out.println(" - Account 1 (ACC-1) Initial Balance: $20,000.00");
+        System.out.println(" - Account 2 (ACC-2) Initial Balance: $20,000.00");
+        System.out.println(" - Total System Pooled Money        : $40,000.00");
+        System.out.println(" - Thread A: 500 transfers of $100 (ACC-1 -> ACC-2)");
+        System.out.println(" - Thread B: 500 transfers of $100 (ACC-2 -> ACC-1)");
         System.out.println(" - Total Transfers: 1,000 concurrent transfers");
         System.out.println("--------------------------------------------------------------------------");
 
@@ -239,9 +239,9 @@ public class ConcurrencyHarness {
             System.out.printf(" - Thread A Transfers (1->2): %d / %d\n", threadASuccess.get(), transfersPerThread);
             System.out.printf(" - Thread B Transfers (2->1): %d / %d\n", threadBSuccess.get(), transfersPerThread);
             System.out.printf(" - Total Errors / Aborts  : %d\n", errors.get());
-            System.out.printf(" - ACC-1 Final Balance    : ₹%,.2f (Expected: ₹20,000.00)\n", finalBalance1);
-            System.out.printf(" - ACC-2 Final Balance    : ₹%,.2f (Expected: ₹20,000.00)\n", finalBalance2);
-            System.out.printf(" - Total Pooled Money     : ₹%,.2f (Expected: ₹40,000.00)\n", totalPooledMoney);
+            System.out.printf(" - ACC-1 Final Balance    : $%,.2f (Expected: $20,000.00)\n", finalBalance1);
+            System.out.printf(" - ACC-2 Final Balance    : $%,.2f (Expected: $20,000.00)\n", finalBalance2);
+            System.out.printf(" - Total Pooled Money     : $%,.2f (Expected: $40,000.00)\n", totalPooledMoney);
 
             boolean totalConserved = Math.abs(totalPooledMoney - 40000.00) < 0.001;
             boolean balancesEqual = Math.abs(finalBalance1 - 20000.00) < 0.001 && Math.abs(finalBalance2 - 20000.00) < 0.001;

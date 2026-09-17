@@ -107,7 +107,7 @@ public class CurrentAccount extends BankAccount {
                         TransactionType.FEE,
                         OVERDRAFT_FEE,
                         balance,
-                        String.format("Overdraft Facility Utilization Fee (₹%.2f assessed)", OVERDRAFT_FEE)
+                        String.format("Overdraft Facility Utilization Fee ($%.2f assessed)", OVERDRAFT_FEE)
                 );
                 addTransaction(feeTx);
             }

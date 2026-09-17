@@ -93,10 +93,16 @@ public class BankServiceImpl implements BankService {
         if (accountNumber == null || accountNumber.trim().isEmpty()) {
             throw new AccountNotFoundException("Provided account number is null or empty");
         }
-        BankAccount account = accounts.get(accountNumber.trim().toUpperCase());
+        String cleanAcc = accountNumber.trim().toUpperCase();
+        BankAccount account = accounts.get(cleanAcc);
         if (account == null) {
-            // Also attempt case-sensitive match
             account = accounts.get(accountNumber.trim());
+        }
+        if (account == null && !cleanAcc.startsWith("SAV-") && !cleanAcc.startsWith("CUR-")) {
+            account = accounts.get("SAV-" + cleanAcc);
+            if (account == null) {
+                account = accounts.get("CUR-" + cleanAcc);
+            }
         }
         if (account == null) {
             throw new AccountNotFoundException(accountNumber);
@@ -109,9 +115,13 @@ public class BankServiceImpl implements BankService {
         if (customerId == null || customerId.trim().isEmpty()) {
             throw new CustomerNotFoundException("Provided customer ID is null or empty");
         }
-        Customer customer = customers.get(customerId.trim().toUpperCase());
+        String cleanId = customerId.trim().toUpperCase();
+        Customer customer = customers.get(cleanId);
         if (customer == null) {
             customer = customers.get(customerId.trim());
+        }
+        if (customer == null && !cleanId.startsWith("CUST-")) {
+            customer = customers.get("CUST-" + cleanId);
         }
         if (customer == null) {
             throw new CustomerNotFoundException(customerId);

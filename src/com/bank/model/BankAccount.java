@@ -217,7 +217,7 @@ public abstract class BankAccount implements Transactable, Reportable {
                     owner.getFullName(), owner.getCustomerId()));
             sb.append(String.format(" Contact Email  : %-20s Phone        : %s\n",
                     owner.getEmail(), owner.getPhone()));
-            sb.append(String.format(" Current Balance: ₹%,.2f\n", balance));
+            sb.append(String.format(" Current Balance: $%,.2f\n", balance));
             sb.append("--------------------------------------------------------------------------------------------------------\n");
             sb.append(String.format(" %-12s | %-19s | %-13s | %-14s | %-14s | %s\n",
                     "TX ID", "TIMESTAMP", "TYPE", "AMOUNT", "BALANCE AFTER", "DESCRIPTION"));
@@ -228,7 +228,7 @@ public abstract class BankAccount implements Transactable, Reportable {
             } else {
                 for (Transaction tx : transactions) {
                     String shortId = tx.transactionId().length() > 8 ? tx.transactionId().substring(0, 8) : tx.transactionId();
-                    sb.append(String.format(" TX-%-9s | %-19s | %-13s | ₹%,12.2f | ₹%,12.2f | %s\n",
+                    sb.append(String.format(" TX-%-9s | %-19s | %-13s | $%,12.2f | $%,12.2f | %s\n",
                             shortId,
                             tx.timestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                             tx.type().name(),
@@ -264,7 +264,7 @@ public abstract class BankAccount implements Transactable, Reportable {
     @Override
     public String toString() {
         synchronized (lock) {
-            return String.format("%s[AccNum: %s | Owner: %s (%s) | Balance: ₹%,.2f | TxCount: %d]",
+            return String.format("%s[AccNum: %s | Owner: %s (%s) | Balance: $%,.2f | TxCount: %d]",
                     getAccountType(), accountNumber, owner.getFullName(), owner.getCustomerId(), balance, transactions.size());
         }
     }
